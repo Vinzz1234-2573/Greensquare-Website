@@ -92,6 +92,20 @@ footer{background:var(--k);border-top:2px solid var(--l);padding:56px 52px 24px}
 .lcard-desc{font-family:var(--B);font-size:11px;font-weight:600;color:rgba(14,19,15,.68);margin-bottom:5px}
 .lcard-h{font-family:var(--B);font-size:11px;color:rgba(14,19,15,.38);margin-bottom:7px}
 .lcard-d{font-family:var(--B);font-size:10px;font-weight:700;color:var(--l);text-decoration:none;letter-spacing:1px;text-transform:uppercase}
+/* YOUTUBE "WATCH HOW TO GET THERE" LINK */
+.lcard-links,.popup-links{display:flex;gap:18px;align-items:center;flex-wrap:wrap;row-gap:6px}
+.lcard-yt,.popup-yt{font-family:var(--B);font-size:10px;font-weight:700;color:#d62d20;text-decoration:none;letter-spacing:1px;text-transform:uppercase;white-space:nowrap;background:none;border:0;padding:0;cursor:pointer}
+/* VIDEO PREVIEW POP-UP */
+.vmodal{position:fixed;inset:0;z-index:10001;background:rgba(14,19,15,.85);display:none;align-items:center;justify-content:center;padding:20px}
+.vmodal.o{display:flex}
+.vwrap{display:flex;flex-direction:column;align-items:center;gap:12px}
+.vttl{font-family:var(--D);font-size:14px;font-weight:700;color:var(--c);text-align:center}
+.vbox{width:min(360px,90vw,calc(78vh * 9 / 16));aspect-ratio:9/16;background:#000;border-radius:16px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.5)}
+.vbox.wide{width:min(860px,90vw,calc(78vh * 16 / 9));aspect-ratio:16/9}
+.vbox iframe{width:100%;height:100%;border:0;display:block}
+.vclose{position:absolute;top:16px;right:16px;width:44px;height:44px;border-radius:50%;border:1px solid rgba(247,249,237,.3);background:transparent;color:var(--c);font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s}
+.vclose:hover{background:var(--l);border-color:var(--l);color:var(--k)}
+.lcard-d:hover,.lcard-yt:hover,.popup-dir:hover,.popup-yt:hover{text-decoration:underline}
 .mapbox{position:relative;z-index:1;border-radius:16px;overflow:hidden;border:1.5px solid rgba(11,76,9,.1);width:100%;height:520px;background:rgba(11,76,9,.04)}
 .leaflet-popup-content-wrapper{border-radius:12px}
 .leaflet-popup-content{font-family:var(--B);margin:13px 16px}
@@ -280,6 +294,15 @@ footer{background:var(--k);border-top:2px solid var(--l);padding:56px 52px 24px}
   </div>
 </footer>
 
+<!-- VIDEO PREVIEW POP-UP -->
+<div class="vmodal" id="vmodal" role="dialog" aria-modal="true" aria-label="How to get there video">
+  <button class="vclose" id="vclose" aria-label="Close video">✕</button>
+  <div class="vwrap">
+    <p class="vttl" id="vttl"></p>
+    <div class="vbox" id="vbox"><iframe id="vframe" title="How to get there video" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe></div>
+  </div>
+</div>
+
 <!-- WhatsApp Float -->
 <a href="https://wa.me/6583838677" id="waFloat" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp Green Square" style="position:fixed;bottom:24px;right:24px;z-index:190;width:52px;height:52px;background:#25D366;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 20px rgba(37,211,102,.45);text-decoration:none;transition:all .35s;opacity:0;transform:scale(0)"><svg width="26" height="26" viewBox="0 0 24 24" fill="#fff"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg></a>
 
@@ -296,25 +319,27 @@ const prog=document.getElementById('prog');
 window.addEventListener('scroll',()=>{const st=window.scrollY,dh=document.documentElement.scrollHeight-window.innerHeight;if(prog)prog.style.width=(dh>0?(st/dh*100):0)+'%'},{passive:true});
 setTimeout(()=>{const w=document.getElementById('waFloat');if(w){w.style.opacity='1';w.style.transform='scale(1)'}},1500);
 
-/* LOCATIONS */
+/* LOCATIONS
+   To add a "Watch How to Get There" video to any location,
+   add  ,yt:'https://www.youtube.com/watch?v=VIDEO_ID'  at the end of its line. */
 const locs=[
-  {n:'Alexandra Hospital',addr:'378 Alexandra Road S159964',desc:'Main Building Lobby, beside Information Counter',h:'During hospital hours',area:'alexandra queenstown',lat:1.2865882,lng:103.8012749},
+  {n:'Alexandra Hospital',addr:'378 Alexandra Road S159964',desc:'Main Building Lobby, beside Information Counter',h:'During hospital hours',area:'alexandra queenstown',lat:1.2865882,lng:103.8012749,yt:'https://youtube.com/shorts/xWtCc9xfNJA'},
   {n:'Changi General Hospital',addr:'2 Simei Street 3 S529889',desc:'CGH Main Building Level 1, behind Kopitiam',h:'During hospital hours',area:'changi simei',lat:1.3401915,lng:103.9495701},
-  {n:'City Square Mall',addr:'180 Kitchener Rd S208539',desc:'Textile Bin at B4 Travellator Lobby',h:'Mall opening hours',area:'kitchener farrer park little india',lat:1.3114516,lng:103.8561608},
-  {n:'Downtown East',addr:'1 Pasir Ris Close S519599',desc:'E!Avenue Level 1, Lift Lobby near 7-Eleven',h:'Open daily',area:'pasir ris',lat:1.3775631,lng:103.954703},
+  {n:'City Square Mall',addr:'180 Kitchener Rd S208539',desc:'Textile Bin at B4 Travellator Lobby',h:'Mall opening hours',area:'kitchener farrer park little india',lat:1.3114516,lng:103.8561608,yt:'https://www.youtube.com/watch?v=ERIjcNtISH0'},
+  {n:'Downtown East',addr:'1 Pasir Ris Close S519599',desc:'E!Avenue Level 1, Lift Lobby near 7-Eleven',h:'Open daily',area:'pasir ris',lat:1.3775631,lng:103.954703,yt:'https://youtube.com/shorts/1HcaydF46UE'},
   {n:'G2000 Plaza Singapura',addr:'68 Orchard Road #01-06 S238839',desc:'',h:'During store hours',area:'orchard',lat:1.3003375,lng:103.845139},
-  {n:'Great World',addr:'1 Kim Seng Promenade S237994',desc:'B2 Carpark Entrance, outside Minmed Clinic',h:'Mall opening hours',area:'river valley great world',lat:1.2936,lng:103.8319},
-  {n:'KK Women\'s and Children\'s Hospital',addr:'100 Bukit Timah Road S229899',desc:'Women\'s Tower Level 1, near Women\'s Specialist Clinic',h:'During hospital hours',area:'novena bukit timah kkh',lat:1.310490068,lng:103.8468133},
+  {n:'Great World',addr:'1 Kim Seng Promenade S237994',desc:'B2 Carpark Entrance, outside Minmed Clinic',h:'Mall opening hours',area:'river valley great world',lat:1.2936,lng:103.8319,yt:'https://youtube.com/shorts/yBLmEZM78mc'},
+  {n:'KK Women\'s and Children\'s Hospital',addr:'100 Bukit Timah Road S229899',desc:'Women\'s Tower Level 1, near Women\'s Specialist Clinic',h:'During hospital hours',area:'novena bukit timah kkh',lat:1.310490068,lng:103.8468133,yt:'https://youtube.com/shorts/sI6bD-e6EfE'},
   {n:'Metro Paragon',addr:'290 Orchard Road #02-28 S238859',desc:'Customer Service Counter',h:'During mall hours',area:'orchard',lat:1.3043349,lng:103.8361743},
   {n:'Metro Woodlands',addr:'1 Woodlands Square #01-18/19 Causeway Point S738099',desc:'Customer Service Counter',h:'During mall hours',area:'woodlands causeway point',lat:1.4361425,lng:103.7855552},
-  {n:'Millenia Walk',addr:'9 Raffles Blvd S039596',desc:'Level 2, in front of Lift Lobby',h:'Open daily',area:'raffles city hall marina',lat:1.2916585,lng:103.8597629},
+  {n:'Millenia Walk',addr:'9 Raffles Blvd S039596',desc:'Level 2, in front of Lift Lobby',h:'Open daily',area:'raffles city hall marina',lat:1.2916585,lng:103.8597629,yt:'https://youtube.com/shorts/Okw6Uu4ov5Y'},
   {n:'National Heart Centre Singapore',addr:'5 Hospital Drive S169609',desc:'Level 1, beside drop-off point',h:'During hospital hours',area:'outram',lat:1.2785753,lng:103.8361084},
-  {n:'Northpoint City',addr:'930 Yishun Ave 2 S769098',desc:'Level 2 in front of Green iT! corner, South Wing',h:'Mall opening hours',area:'yishun',lat:1.4293478,lng:103.8358671},
-  {n:'Our Tampines Hub',addr:'1 Tampines Walk S528523',desc:'Level 1, opposite hawker centre inside central plaza',h:'Open daily',area:'tampines',lat:1.3535348,lng:103.9402531},
+  {n:'Northpoint City',addr:'930 Yishun Ave 2 S769098',desc:'Level 2 in front of Green iT! corner, South Wing',h:'Mall opening hours',area:'yishun',lat:1.4293478,lng:103.8358671,yt:'https://youtube.com/shorts/jcOTvyOqIw0'},
+  {n:'Our Tampines Hub',addr:'1 Tampines Walk S528523',desc:'Level 1, opposite hawker centre inside central plaza',h:'Open daily',area:'tampines',lat:1.3535348,lng:103.9402531,yt:'https://youtube.com/shorts/NQPRcCuQPQs'},
   {n:'Quayside Isle',addr:'31 Ocean Way S098375',desc:'B1 near Lift Lobby, next to Electronics & Food Donation bins',h:'Open daily',area:'sentosa harbourfront',lat:1.2476808,lng:103.8420723},
   {n:'Sengkang General Hospital',addr:'110 Sengkang E Way S544886',desc:'Level 1 in front of Cheers and Koi, beside drop-off point',h:'During hospital hours',area:'sengkang',lat:1.3954449,lng:103.8934578},
-  {n:'The Centrepoint',addr:'176 Orchard Road S238843',desc:'Level 3 Green Corner',h:'Mall opening hours',area:'orchard somerset',lat:1.3012253,lng:103.8398652},
-  {n:'Tiong Bahru Plaza',addr:'302 Tiong Bahru Road S168732',desc:'Level 1 next to taxi stand',h:'Mall opening hours',area:'tiong bahru',lat:1.2866535,lng:103.8271459},
+  {n:'The Centrepoint',addr:'176 Orchard Road S238843',desc:'Level 3 Green Corner',h:'Mall opening hours',area:'orchard somerset',lat:1.3012253,lng:103.8398652,yt:'https://youtube.com/shorts/aYD4Lu2sFo4'},
+  {n:'Tiong Bahru Plaza',addr:'302 Tiong Bahru Road S168732',desc:'Level 1 next to taxi stand',h:'Mall opening hours',area:'tiong bahru',lat:1.2866535,lng:103.8271459,yt:'https://youtube.com/shorts/kPDeUZxkXCM'},
   {n:'Valley Point Shopping Centre',addr:'491 River Valley Road S248371',desc:'B1 near Lift Lobby',h:'Mall opening hours',area:'river valley',lat:1.293072263,lng:103.8270759},
   {n:'Velocity @ Novena Square',addr:'238 Thomson Road S307683',desc:'Carpark Level 3B, outside cargo lift',h:'Mall opening hours',area:'novena thomson',lat:1.3203162,lng:103.8437113},
   {n:'Woodlands Health Campus',addr:'17 Woodlands Drive 17 S737628',desc:'B1 Near the Cascading Waterfall',h:'During hospital hours',area:'woodlands',lat:1.4250207,lng:103.7946271},
@@ -322,8 +347,25 @@ const locs=[
 ];
 function dirLink(l){return `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(l.n+' Singapore')}`}
 function locBlock(l,addrCls,descCls,hCls){return `<div class="${addrCls}">${l.addr}</div>${l.desc?`<div class="${descCls}">${l.desc}</div>`:''}<div class="${hCls}">🕐 ${l.h}</div>`}
-function rL(d){document.getElementById('llist').innerHTML=d.length?d.map(l=>`<div class="lcard" onclick="sL(this,'${l.n.replace(/'/g,"\\'")}')"><div class="lcard-n">${l.n}</div>${locBlock(l,'lcard-addr','lcard-desc','lcard-h')}<a href="${dirLink(l)}" target="_blank" rel="noopener" class="lcard-d">Get Directions ↗</a></div>`).join(''):'<p style="font-size:12px;color:rgba(14,19,15,.38);padding:12px 0">No results found.</p>'}
+function ytLink(l,cls){return l.yt?`<button type="button" class="${cls}" onclick="event.stopPropagation();openVid(${locs.indexOf(l)})">▶ Watch How to Get There</button>`:''}
+function rL(d){document.getElementById('llist').innerHTML=d.length?d.map(l=>`<div class="lcard" onclick="sL(this,'${l.n.replace(/'/g,"\\'")}')"><div class="lcard-n">${l.n}</div>${locBlock(l,'lcard-addr','lcard-desc','lcard-h')}<div class="lcard-links"><a href="${dirLink(l)}" target="_blank" rel="noopener" class="lcard-d" onclick="event.stopPropagation()">Get Directions ↗</a>${ytLink(l,'lcard-yt')}</div></div>`).join(''):'<p style="font-size:12px;color:rgba(14,19,15,.38);padding:12px 0">No results found.</p>'}
 rL(locs);
+
+/* VIDEO PREVIEW POP-UP */
+const vModal=document.getElementById('vmodal'),vFrame=document.getElementById('vframe'),vBox=document.getElementById('vbox'),vTtl=document.getElementById('vttl');
+function ytId(u){const m=u.match(/(?:shorts\/|v=|youtu\.be\/|embed\/)([\w-]{11})/);return m?m[1]:null}
+function openVid(i){
+  const l=locs[i],id=ytId(l.yt);
+  if(!id){window.open(l.yt,'_blank','noopener');return}
+  vBox.classList.toggle('wide',!/shorts\//.test(l.yt));
+  vTtl.textContent=l.n;
+  vFrame.src=`https://www.youtube-nocookie.com/embed/${id}?autoplay=1&rel=0&playsinline=1`;
+  vModal.classList.add('o');document.body.style.overflow='hidden';
+}
+function closeVid(){vModal.classList.remove('o');vFrame.src='';document.body.style.overflow=''}
+document.getElementById('vclose').addEventListener('click',closeVid);
+vModal.addEventListener('click',e=>{if(e.target===vModal)closeVid()});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&vModal.classList.contains('o'))closeVid()});
 
 /* MAP */
 const binMap=L.map('bin-map').setView([1.3521,103.8198],11);
@@ -334,7 +376,7 @@ locs.forEach(l=>{
   if(l.lat==null||l.lng==null)return;
   const popupHTML=isMobileMap
     ? `<a href="${dirLink(l)}" target="_blank" rel="noopener" class="popup-n-link">${l.n}</a>`
-    : `<div class="popup-n">${l.n}</div>${locBlock(l,'popup-addr','popup-desc','popup-h')}<a href="${dirLink(l)}" target="_blank" rel="noopener" class="popup-dir">Get Directions ↗</a>`;
+    : `<div class="popup-n">${l.n}</div>${locBlock(l,'popup-addr','popup-desc','popup-h')}<div class="popup-links"><a href="${dirLink(l)}" target="_blank" rel="noopener" class="popup-dir">Get Directions ↗</a>${ytLink(l,'popup-yt')}</div>`;
   const m=L.marker([l.lat,l.lng]).addTo(binMap).bindPopup(popupHTML,isMobileMap?{maxWidth:240}:{});
   binMarkers[l.n]=m;
 });
@@ -344,4 +386,4 @@ function sL(el,name){document.querySelectorAll('.lcard').forEach(c=>c.classList.
 document.getElementById('lsrch').addEventListener('input',function(){const v=this.value.toLowerCase();rL(locs.filter(l=>l.n.toLowerCase().includes(v)||l.addr.toLowerCase().includes(v)||l.desc.toLowerCase().includes(v)||l.area.includes(v)))});
 </script>
 </body>
-</html> 
+</html>
